@@ -1,0 +1,58 @@
+// Define pins for ultrasonic sensor and buzzer
+const int trigPin = 2;
+const int echoPin = 3;
+const int buzzerPin = 4;
+
+// Variables for storing distance and buzzer state
+long duration;
+int distance;
+bool doorOpen = false;
+
+void setup() {
+  // Initialize serial communication
+  Serial.begin(9600);
+
+  // Initialize pins
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  pinMode(buzzerPin, OUTPUT);
+}
+
+void loop() {
+  // Clear previous readings
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+
+  // Triggering the sensor by sending a 10 microsecond high pulse
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  // Measure the duration of the echo pulse
+  duration = pulseIn(echoPin, HIGH);
+
+  // Calculate the distance in centimeters
+  distance = duration * 0.034 / 2;
+
+  // Check if distance is less than or equal to 100cm
+  if (distance <= 100) {
+    if (!doorOpen) {
+      doorOpen = true;
+      Serial.println("Door Open");
+      digitalWrite(buzzerPin, HIGH);  // Turn on the buzzer
+    }
+  } else {
+    if (doorOpen) {
+      doorOpen = false;
+      digitalWrite(buzzerPin, LOW);   // Turn off the buzzer
+    }
+  }
+
+  // Print distance to serial monitor
+  Serial.print("Distance: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+
+  // Delay before next measurement
+  delay(2000);  // Adjust delay time as needed
+}
