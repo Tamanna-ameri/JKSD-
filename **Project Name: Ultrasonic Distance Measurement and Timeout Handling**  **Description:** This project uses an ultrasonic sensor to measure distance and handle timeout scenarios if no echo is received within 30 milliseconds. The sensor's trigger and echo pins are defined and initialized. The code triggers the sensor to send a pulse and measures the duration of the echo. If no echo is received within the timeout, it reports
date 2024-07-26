@@ -1,0 +1,41 @@
+const int trigPin = 5;   // Define the trigger pin
+const int echoPin = 14;  // Define the echo pin (changed to GPIO14)
+
+void setup() {
+  Serial.begin(115200); // Initialize serial communication at 115200 baud rate
+  pinMode(trigPin, OUTPUT); // Set the trigger pin as an output
+  pinMode(echoPin, INPUT);  // Set the echo pin as an input
+}
+
+void loop() {
+  long duration, distance;
+
+  // Clear the trigger pin
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+
+  // Trigger the ultrasonic pulse
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  // Read the duration of the pulse
+  duration = pulseIn(echoPin, HIGH, 30000); // Timeout after 30ms
+
+  if (duration == 0) {
+    Serial.println("No echo received or timeout");
+    distance = 0;
+  } else {
+    // Calculate the distance (speed of sound is 34300 cm/s, divided by 2 for round trip)
+    distance = (duration / 2) / 29.1;
+  }
+
+  // Print the duration and distance to the serial monitor
+  Serial.print("Duration: ");
+  Serial.print(duration);
+  Serial.print(" us, Distance: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+
+  delay(2000); // Wait for 2 seconds before taking another reading
+}
