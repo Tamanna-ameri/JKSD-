@@ -1,0 +1,59 @@
+#include <Servo.h>
+
+// Define pins for the ultrasonic sensor
+const int trigPin = 9;
+const int echoPin = 10;
+
+// Create a Servo object
+Servo tollServo;
+
+// Define the distance threshold in cm
+const int distanceThreshold = 10;
+
+// Define the servo positions
+const int openPosition = 0; // Open position (adjust as needed)
+const int closedPosition = 90; // Closed position (adjust as needed)
+
+void setup() {
+  // Initialize serial communication
+  Serial.begin(9600);
+  
+  // Set the ultrasonic sensor pins as input/output
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  
+  // Attach the servo to pin 3
+  tollServo.attach(12);
+  
+  // Start with the toll gate open
+  tollServo.write(openPosition);
+}
+
+void loop() {
+  // Measure the distance
+  long duration, distance;
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH);
+  distance = (duration / 2) / 29.1; // Convert to cm
+  
+  // Print the distance to the serial monitor (for debugging)
+  Serial.print("Distance: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+  
+  // Check if the object is within the threshold distance
+  if (distance <= distanceThreshold) {
+    // Lower the toll gate (close position)
+    tollServo.write(closedPosition);
+    delay(5000); // Wait for 5 seconds
+    
+    // Raise the toll gate (open position)
+    tollServo.write(openPosition);
+  }
+  
+  delay(1000); // Short delay before the next measurement
+} Name this code 
